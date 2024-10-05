@@ -112,6 +112,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize UI elements
+        secondDestinationInput = findViewById(R.id.second_destination_input);
+        searchSecondDestinationButton = findViewById(R.id.search_second_destination_button);
+
+        // Hide the second destination input and button initially
+        secondDestinationInput.setVisibility(View.GONE);
+        searchSecondDestinationButton.setVisibility(View.GONE);
         OkHttpClient weatherClient = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
@@ -250,27 +257,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String origin = originInput.getText().toString().trim();
                 String destination = destinationInput.getText().toString().trim();
 
-                // Reset navigation state
-                isNavigationStarted = false; // Ensure navigation is not started automatically
-                shouldRecenterMap = false; // Prevent automatic recentering and zooming
-                if (fusedLocationClient != null && locationCallback != null) {
-                    fusedLocationClient.removeLocationUpdates(locationCallback);
-                }
-
                 if (!destination.isEmpty()) {
-                    if (origin.isEmpty() && currentLocation != null) {
-                        fetchCoordinates(null, destination, currentLocation);
-                    } else {
-                        fetchCoordinates(origin, destination, null);
-                    }
+                    // Make the second destination input and button visible
+                    secondDestinationInput.setVisibility(View.VISIBLE);
+                    searchSecondDestinationButton.setVisibility(View.VISIBLE);
+
+                    // Force layout update to show the changes immediately
+                    findViewById(R.id.constraint_layout).requestLayout();
+
+                    // Fetch coordinates or process destination (your existing logic)
+                    fetchCoordinates(origin, destination, null);
                 } else {
-                    Toast.makeText(MainActivity.this, "Please enter destination", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Please enter a destination", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error in searchButton click listener: " + e.getMessage());
                 Toast.makeText(MainActivity.this, "An error occurred while searching", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         exitButton.setOnClickListener(v -> {
             exitNavigation();
@@ -347,32 +352,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-        expandButton.setOnClickListener(v -> {
-            ConstraintLayout constraintLayout = findViewById(R.id.constraint_layout);
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-
-            // Adjust constraints to expand the layout while keeping the start button visible
-            constraintSet.connect(R.id.origin_input, ConstraintSet.TOP, R.id.constraint_layout, ConstraintSet.TOP, 8);
-            constraintSet.connect(R.id.map, ConstraintSet.TOP, R.id.start_button, ConstraintSet.BOTTOM, 8);
-
-            constraintSet.applyTo(constraintLayout);
-            expandButton.setVisibility(View.GONE); // Hide the expand button after expanding
-            collapseButton.setVisibility(View.VISIBLE); // Show the collapse button
-
-            // Show the search input fields and other elements when expanded
-            originInput.setVisibility(View.VISIBLE);
-            destinationInput.setVisibility(View.VISIBLE);
-            secondDestinationInput.setVisibility(View.VISIBLE); // Show second destination input
-            searchSecondDestinationButton.setVisibility(View.VISIBLE); // Show second destination search button
-            searchButton.setVisibility(View.VISIBLE);
-            durationViewDriving.setVisibility(View.VISIBLE);
-            durationViewWalking.setVisibility(View.VISIBLE);
-            routesGroup.setVisibility(View.VISIBLE);
-            fetchWeatherButton.setVisibility(View.VISIBLE); // Show fetch weather button
-            weatherCard.setVisibility(View.VISIBLE); // Show weather card
-            averageTempView.setVisibility(View.VISIBLE); // Show average temperature view
-        });
 
 
         // Settings button click listener
@@ -467,6 +446,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Ensure the start button is visible after starting navigation
         startButton.setVisibility(View.VISIBLE);
+    }
+    private void collapseLayout() {
+        secondDestinationInput.setVisibility(View.GONE);
+        searchSecondDestinationButton.setVisibility(View.GONE);
+        findViewById(R.id.constraint_layout).requestLayout(); // Refresh layout
+    }
+
+    private void expandLayout() {
+        secondDestinationInput.setVisibility(View.VISIBLE);
+        searchSecondDestinationButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.constraint_layout).requestLayout(); // Refresh layout
     }
 
     private void collapseTableAndStartNavigation() {
