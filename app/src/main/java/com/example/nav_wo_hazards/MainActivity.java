@@ -109,6 +109,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize UI elements
+        secondDestinationInput = findViewById(R.id.second_destination_input);
+        searchSecondDestinationButton = findViewById(R.id.search_second_destination_button);
+
+        // Hide the second destination input and button initially
+        secondDestinationInput.setVisibility(View.GONE);
+        searchSecondDestinationButton.setVisibility(View.GONE);
         OkHttpClient weatherClient = new OkHttpClient.Builder()
                 .addInterceptor(new HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                 .build();
@@ -247,27 +254,25 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 String origin = originInput.getText().toString().trim();
                 String destination = destinationInput.getText().toString().trim();
 
-                // Reset navigation state
-                isNavigationStarted = false; // Ensure navigation is not started automatically
-                shouldRecenterMap = false; // Prevent automatic recentering and zooming
-                if (fusedLocationClient != null && locationCallback != null) {
-                    fusedLocationClient.removeLocationUpdates(locationCallback);
-                }
-
                 if (!destination.isEmpty()) {
-                    if (origin.isEmpty() && currentLocation != null) {
-                        fetchCoordinates(null, destination, currentLocation);
-                    } else {
-                        fetchCoordinates(origin, destination, null);
-                    }
+                    // Make the second destination input and button visible
+                    secondDestinationInput.setVisibility(View.VISIBLE);
+                    searchSecondDestinationButton.setVisibility(View.VISIBLE);
+
+                    // Force layout update to show the changes immediately
+                    findViewById(R.id.constraint_layout).requestLayout();
+
+                    // Fetch coordinates or process destination (your existing logic)
+                    fetchCoordinates(origin, destination, null);
                 } else {
-                    Toast.makeText(MainActivity.this, "Please enter destination", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Please enter a destination", Toast.LENGTH_SHORT).show();
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error in searchButton click listener: " + e.getMessage());
                 Toast.makeText(MainActivity.this, "An error occurred while searching", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         exitButton.setOnClickListener(v -> {
             exitNavigation();
@@ -463,6 +468,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Ensure the start button is visible after starting navigation
         startButton.setVisibility(View.VISIBLE);
+    }
+    private void collapseLayout() {
+        secondDestinationInput.setVisibility(View.GONE);
+        searchSecondDestinationButton.setVisibility(View.GONE);
+        findViewById(R.id.constraint_layout).requestLayout(); // Refresh layout
+    }
+
+    private void expandLayout() {
+        secondDestinationInput.setVisibility(View.VISIBLE);
+        searchSecondDestinationButton.setVisibility(View.VISIBLE);
+        findViewById(R.id.constraint_layout).requestLayout(); // Refresh layout
     }
 
     private void collapseTableAndStartNavigation() {
