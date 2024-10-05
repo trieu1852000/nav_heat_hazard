@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RadioGroup
+        android:id="@+id/mode_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_driving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Driving" />
+
+        <RadioButton
+            android:id="@+id/radio_walking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Walking" />
+    </RadioGroup>
+
+    <Switch
+        android:id="@+id/switch_avoid_tolls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Avoid Tolls"
+        android:paddingTop="16dp"/>
+
+    <Switch
+        android:id="@+id/switch_avoid_highways"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Avoid Highways"
+        android:paddingTop="16dp"/>
+</LinearLayout>

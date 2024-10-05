@@ -1,0 +1,261 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Input field for the origin location with autofill -->
+    <AutoCompleteTextView
+        android:id="@+id/origin_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="Enter origin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Input field for the destination location with autofill -->
+    <AutoCompleteTextView
+        android:id="@+id/destination_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="Enter destination"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/origin_input" />
+
+    <!-- Button to trigger the search action -->
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/destination_input" />
+
+    <!-- Input field for the second destination location with autofill -->
+    <AutoCompleteTextView
+        android:id="@+id/second_destination_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="Enter second destination"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_button" />
+
+    <!-- Button to trigger the search action for the second destination -->
+    <Button
+        android:id="@+id/search_second_destination_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Add Second Destination"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/second_destination_input" />
+    <Button
+        android:id="@+id/fetch_weather_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Temperature"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/weather_card"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+    <!-- CardView to display weather data in a white box -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/weather_card"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_second_destination_button">
+
+        <TextView
+            android:id="@+id/weather_data_textview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Weather data will be displayed here"
+            android:padding="16dp"
+            android:textColor="@android:color/black"/>
+    </androidx.cardview.widget.CardView>
+
+    <!-- TextView to display the average temperature -->
+    <TextView
+        android:id="@+id/average_temp_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Average Temperature: N/A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/weather_card" />
+
+    <!-- TextView to display the driving duration -->
+    <TextView
+        android:id="@+id/duration_view_driving"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/average_temp_view" />
+
+    <!-- TextView to display the walking duration -->
+    <TextView
+        android:id="@+id/duration_view_walking"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/duration_view_driving" />
+
+    <!-- ScrollView to contain the routes options -->
+    <ScrollView
+        android:id="@+id/scroll_view_routes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/duration_view_walking"
+        app:layout_constraintBottom_toTopOf="@+id/start_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <!-- RadioGroup to list the route options -->
+        <RadioGroup
+            android:id="@+id/routes_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <!-- Button to start navigation, always visible -->
+    <Button
+        android:id="@+id/start_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Start"
+        app:layout_constraintTop_toBottomOf="@+id/scroll_view_routes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Fragment to display the map -->
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/start_button"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- LinearLayout to hold Remaining Time, Recenter, and Settings in one line -->
+    <LinearLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="8dp">
+
+        <!-- Button to recenter the map -->
+        <Button
+            android:id="@+id/recenter_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:text="Recenter"
+            android:visibility="visible" />
+
+        <!-- TextView to display the remaining time -->
+        <TextView
+            android:id="@+id/remaining_time_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Remaining Time: 0 mins"
+            android:textStyle="bold"
+            android:textColor="#FF0000"
+            android:elevation="4dp"
+            android:gravity="center"/>
+
+        <!-- Button to access settings -->
+        <Button
+            android:id="@+id/settings_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+
+    <!-- Button to collapse the layout -->
+    <Button
+        android:id="@+id/collapse_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Collapse"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="visible" />
+
+    <!-- Button to expand the layout -->
+    <Button
+        android:id="@+id/expand_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Expand"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone" />
+
+    <!-- Button to exit the navigation -->
+    <Button
+        android:id="@+id/exit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="Exit"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/navigation_instructions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Navigation Instructions"
+        android:textSize="18sp"
+        android:padding="16dp"
+        android:textColor="@android:color/black"
+        android:visibility="gone"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        app:layout_constraintTop_toBottomOf="@+id/origin_input"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
