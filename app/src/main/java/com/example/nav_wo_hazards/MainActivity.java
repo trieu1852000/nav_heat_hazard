@@ -321,6 +321,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             fetchWeatherButton.setVisibility(View.GONE); // Hide fetch weather button
             weatherCard.setVisibility(View.GONE); // Hide weather card
             averageTempView.setVisibility(View.GONE); // Hide average temperature view
+            startButton.setVisibility(View.GONE);
         });
 
         expandButton.setOnClickListener(v -> {
@@ -348,6 +349,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             fetchWeatherButton.setVisibility(View.VISIBLE); // Show fetch weather button
             weatherCard.setVisibility(View.VISIBLE); // Show weather card
             averageTempView.setVisibility(View.VISIBLE); // Show average temperature view
+            startButton.setVisibility(View.VISIBLE);
         });
 
 
@@ -361,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
 
         // Ensure the start button is always visible
-        startButton.setVisibility(View.VISIBLE);
+//        startButton.setVisibility(View.VISIBLE);
     }
 
     private void startNavigation() {
