@@ -35,18 +35,20 @@
         android:layout_marginEnd="16dp"/>
 
     <!-- Button to trigger the search action -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/search_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="48dp"
         android:text="Search"
+        app:cornerRadius="8dp"
+        style="@style/Widget.MaterialComponents.Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/destination_input"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"/>
+
 
     <!-- Input field for the second destination location with autofill -->
     <AutoCompleteTextView
@@ -197,13 +199,18 @@
         android:layout_marginBottom="8dp">
 
         <!-- Button to recenter the map -->
-        <Button
+        <ImageButton
             android:id="@+id/recenter_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:text="Recenter"
-            android:visibility="visible" />
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Recenter"
+            android:src="@drawable/ic_recenter"
+            android:background="@drawable/circle_background"
+            android:layout_marginStart="8dp"
+            android:padding="10dp"
+            android:scaleType="centerInside"/>
+
+
 
         <!-- TextView to display the remaining time -->
         <TextView
@@ -218,11 +225,13 @@
             android:gravity="center"/>
 
         <!-- Button to access settings -->
-        <Button
+        <ImageButton
             android:id="@+id/settings_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Settings"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Settings"
+            android:src="@drawable/ic_settings"
+            android:background="@drawable/circle_background"
             android:layout_marginStart="8dp" />
     </LinearLayout>
 
@@ -274,6 +283,7 @@
         app:layout_constraintTop_toBottomOf="@+id/origin_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 
 
 

@@ -19,6 +19,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -78,7 +79,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String WEATHER_API_BASE_URL = "https://api.tomorrow.io/";
     private static final String WEATHER_API_KEY = "wmEqVXq7GgE3wZ9Or8cFzVOMKOMprZYt";
     private WeatherService weatherService;
-    private Button collapseButton, expandButton, exitButton, settingsButton;
+    private Button collapseButton, expandButton, exitButton;
+    private ImageButton settingsButton;
+
     private FusedLocationProviderClient fusedLocationClient;
     private RadioGroup routesGroup;
     private PlacesClient placesClient;
@@ -90,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private boolean isNavigationStarted = false;
     private boolean userInteractingWithMap = false;
     private LocationCallback locationCallback;
-    private Button recenterButton;
+    private ImageButton recenterButton;
     private boolean shouldRecenterMap = true;
     private TextView remainingTimeView;
     private AutoCompleteTextView secondDestinationInput;
@@ -349,32 +352,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-        expandButton.setOnClickListener(v -> {
-            ConstraintLayout constraintLayout = findViewById(R.id.constraint_layout);
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-
-            // Adjust constraints to expand the layout while keeping the start button visible
-            constraintSet.connect(R.id.origin_input, ConstraintSet.TOP, R.id.constraint_layout, ConstraintSet.TOP, 8);
-            constraintSet.connect(R.id.map, ConstraintSet.TOP, R.id.start_button, ConstraintSet.BOTTOM, 8);
-
-            constraintSet.applyTo(constraintLayout);
-            expandButton.setVisibility(View.GONE); // Hide the expand button after expanding
-            collapseButton.setVisibility(View.VISIBLE); // Show the collapse button
-
-            // Show the search input fields and other elements when expanded
-            originInput.setVisibility(View.VISIBLE);
-            destinationInput.setVisibility(View.VISIBLE);
-            secondDestinationInput.setVisibility(View.VISIBLE); // Show second destination input
-            searchSecondDestinationButton.setVisibility(View.VISIBLE); // Show second destination search button
-            searchButton.setVisibility(View.VISIBLE);
-            durationViewDriving.setVisibility(View.VISIBLE);
-            durationViewWalking.setVisibility(View.VISIBLE);
-            routesGroup.setVisibility(View.VISIBLE);
-            fetchWeatherButton.setVisibility(View.VISIBLE); // Show fetch weather button
-            weatherCard.setVisibility(View.VISIBLE); // Show weather card
-            averageTempView.setVisibility(View.VISIBLE); // Show average temperature view
-        });
 
 
         // Settings button click listener
@@ -407,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         try {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 
                 LocationRequest locationRequest = LocationRequest.create();
                 locationRequest.setInterval(5000);
@@ -695,7 +673,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 18));
         }
     }
-
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with location-based actions
+            } else {
+                // Permission denied
+            }
+        }
+    }
     private void updateNavigation(LatLng currentLatLng) {
         if (mMap != null && selectedRoutePolyline != null) {
             List<LatLng> decodedPath = PolyUtil.decode(selectedRoutePolyline);
