@@ -139,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         durationViewDriving = findViewById(R.id.duration_view_driving);
         durationViewWalking = findViewById(R.id.duration_view_walking);
         searchButton = findViewById(R.id.search_button);
-        collapseButton = findViewById(R.id.collapse_button);
-        expandButton = findViewById(R.id.expand_button);
+        ImageButton collapseButton = findViewById(R.id.collapse_button);
+        ImageButton expandButton = findViewById(R.id.expand_button);
         exitButton = findViewById(R.id.exit_button);
         routesGroup = findViewById(R.id.routes_group);
         startButton = findViewById(R.id.start_button);

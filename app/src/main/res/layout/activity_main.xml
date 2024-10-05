@@ -217,26 +217,36 @@
     </LinearLayout>
 
     <!-- Button to collapse the layout -->
-    <Button
+    <ImageButton
         android:id="@+id/collapse_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:text="Collapse"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="Collapse"
+        android:src="@drawable/ic_collapse"
+        android:background="@drawable/circle_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible" />
+        android:visibility="visible"
+        android:padding="10dp"
+        android:scaleType="centerInside" />
+
+
 
     <!-- Button to expand the layout -->
-    <Button
+    <ImageButton
         android:id="@+id/expand_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minHeight="48dp"
-        android:text="Expand"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:contentDescription="Expand"
+        android:src="@drawable/ic_expand"
+        android:background="@drawable/circle_background"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:padding="10dp"
+        android:scaleType="centerInside" />
+
+
 
     <!-- Button to exit the navigation -->
     <Button
