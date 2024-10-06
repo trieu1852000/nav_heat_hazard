@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private DirectionsService directionsService;
     private String apiKey = "AIzaSyBr5cW5jLQYwJvSUAPWEFaiHCPjS5pZOak";
     private static final String WEATHER_API_BASE_URL = "https://api.tomorrow.io/";
-    private static final String WEATHER_API_KEY = "wmEqVXq7GgE3wZ9Or8cFzVOMKOMprZYt";
+    private static final String WEATHER_API_KEY = "FFApjozfw7O7ziJAJrfSbunM2MY7q27v";
     private WeatherService weatherService;
     private Button collapseButton, expandButton, exitButton;
     private ImageButton settingsButton;
@@ -160,7 +160,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         navigationInstructions = findViewById(R.id.navigation_instructions);
         averageTempView = findViewById(R.id.average_temp_view);  // Add this line
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
+        //weatherCard.setVisibility(View.VISIBLE);
+        fetchWeatherButton.setVisibility(View.GONE);
         setupAutoCompleteTextView(secondDestinationInput, placesClient);
 
         // Setup recenter button click listener
@@ -256,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         searchButton.setOnClickListener(v -> {
             try {
+
                 String origin = originInput.getText().toString().trim();
                 String destination = destinationInput.getText().toString().trim();
 
@@ -338,7 +340,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             ConstraintLayout constraintLayout = findViewById(R.id.constraint_layout);
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(constraintLayout);
-
+            //weatherCard.setVisibility(View.VISIBLE);
+            //fetchWeatherButton.setVisibility(View.GONE);
             // Adjust constraints to expand the layout while keeping the start button visible
             constraintSet.connect(R.id.origin_input, ConstraintSet.TOP, R.id.constraint_layout, ConstraintSet.TOP, 8);
             constraintSet.connect(R.id.map, ConstraintSet.TOP, R.id.start_button, ConstraintSet.BOTTOM, 8);
@@ -356,9 +359,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             durationViewDriving.setVisibility(View.VISIBLE);
             durationViewWalking.setVisibility(View.VISIBLE);
             routesGroup.setVisibility(View.VISIBLE);
-            fetchWeatherButton.setVisibility(View.VISIBLE); // Show fetch weather button
-            weatherCard.setVisibility(View.VISIBLE); // Show weather card
+            //fetchWeatherButton.setVisibility(View.VISIBLE); // Show fetch weather button
+            //weatherCard.setVisibility(View.VISIBLE); // Show weather card
             averageTempView.setVisibility(View.VISIBLE); // Show average temperature view
+
             startButton.setVisibility(View.VISIBLE);
         });
 
@@ -1294,7 +1298,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             // If all 3 temperatures are fetched, calculate the average and return it
                                             if (temperatures.size() == 3) {
                                                 double averageTemp = (temperatures.get(0) + temperatures.get(1) + temperatures.get(2)) / 3.0;
-                                                averageTempView.setText(String.format("Average Temperature: %.2f°C", averageTemp));
+                                                //averageTempView.setText(String.format("Average Temperature: %.2f°C", averageTemp));
                                                 callback.onTemperatureCalculated(averageTemp); // Return the result via callback
                                             }
                                         }
