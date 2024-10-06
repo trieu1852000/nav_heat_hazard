@@ -75,11 +75,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private TextView averageTempView;
     private OkHttpClient client;
     private Retrofit retrofit;
+    private String apiKey;
+
     private GeocodingService geocodingService;
     private DirectionsService directionsService;
-    private String apiKey = "AIzaSyBr5cW5jLQYwJvSUAPWEFaiHCPjS5pZOak";
     private static final String WEATHER_API_BASE_URL = "https://api.tomorrow.io/";
-    private static final String WEATHER_API_KEY = "FFApjozfw7O7ziJAJrfSbunM2MY7q27v";
+    private String weatherApiKey;
     private WeatherService weatherService;
     private Button collapseButton, expandButton, exitButton;
     private ImageButton settingsButton;
@@ -113,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        weatherApiKey = getString(R.string.weather_api_key);
+        apiKey = getString(R.string.google_maps_api_key);
         // Initialize UI elements
         secondDestinationInput = findViewById(R.id.second_destination_input);
         searchSecondDestinationButton = findViewById(R.id.search_second_destination_button);
@@ -136,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         // Initialize UI elements
+
         weatherCard = findViewById(R.id.weather_card);
         weatherService = weatherRetrofit.create(WeatherService.class);
         weatherDataTextView = findViewById(R.id.weather_data_textview);
@@ -1176,7 +1179,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         String locationString = location.latitude + "," + location.longitude;
         Log.d(TAG, "Fetching weather data for location: " + locationString);
 
-        weatherService.getWeatherData(locationString, "temperature,humidity", "metric", WEATHER_API_KEY)
+        weatherService.getWeatherData(locationString, "temperature,humidity", "metric", weatherApiKey)
                 .enqueue(new Callback<WeatherResponse>() {
                     @Override
                     public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
@@ -1278,7 +1281,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
 
             // Make asynchronous network call
-            weatherService.getWeatherData(point.latitude + "," + point.longitude, "temperature", "metric", WEATHER_API_KEY)
+            weatherService.getWeatherData(point.latitude + "," + point.longitude, "temperature", "metric", weatherApiKey)
                     .enqueue(new Callback<WeatherResponse>() {
                         @Override
                         public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
