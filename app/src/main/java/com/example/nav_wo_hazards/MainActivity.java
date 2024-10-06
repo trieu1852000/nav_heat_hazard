@@ -1,6 +1,8 @@
 package com.example.nav_wo_hazards;
 
-import okhttp3.logging.HttpLoggingInterceptor;
+import android.app.Activity;
+import android.content.Context;
+import android.view.inputmethod.InputMethodManager;
 
 import android.Manifest;
 import android.content.Intent;
@@ -267,6 +269,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     // Fetch coordinates or process destination (your existing logic)
                     fetchCoordinates(origin, destination, null);
+                    startButton.setVisibility(View.VISIBLE);
+
+                    // hide keyboard when searched
+                    toggleKeyboard(MainActivity.this);
                 } else {
                     Toast.makeText(MainActivity.this, "Please enter a destination", Toast.LENGTH_SHORT).show();
                 }
@@ -275,6 +281,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(MainActivity.this, "An error occurred while searching", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
 
         exitButton.setOnClickListener(v -> {
@@ -361,11 +369,26 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
         });
-
+        startButton.setVisibility(View.GONE);
         // Ensure the start button is always visible
         //startButton.setVisibility(View.VISIBLE);
     }
+    // Method to toggle keyboard
+    public void toggleKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        View view = activity.getCurrentFocus();
+        if (view == null) {
+            view = new View(activity);
+        }
 
+        if (imm.isAcceptingText()) {
+            // If the keyboard is open, hide it
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        } else {
+            // If the keyboard is closed, show it
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        }
+    }
     private void startNavigation() {
         if (!isNavigationStarted) {
             Toast.makeText(MainActivity.this, "Navigation not started. Click 'Start' to begin navigation.", Toast.LENGTH_SHORT).show();
