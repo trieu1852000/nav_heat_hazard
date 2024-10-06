@@ -269,6 +269,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                     // Fetch coordinates or process destination (your existing logic)
                     fetchCoordinates(origin, destination, null);
+
+
                     startButton.setVisibility(View.VISIBLE);
 
                     // hide keyboard when searched
@@ -749,7 +751,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 updateRemainingTime(currentLatLng, finalDestinationLatLng, getNavigationMode());
                 updateNavigationInstructions(currentLatLng, remainingPath);
-                fetchAverageTemperature(decodedPath);
+                fetchAverageTemperature(decodedPath, new TemperatureCallback() {
+                    @Override
+                    public void onTemperatureCalculated(double averageTemp) {
+                        return;
+                    }
+                });
             }
         }
     }
@@ -945,6 +952,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void fetchMultipleModesDirections(LatLng origin, LatLng destination) {
         fetchDirectionsForMode(origin, destination, getNavigationMode());
     }
+    public interface TemperatureCallback {
+        void onTemperatureCalculated(double averageTemp);
+    }
 
     public interface DirectionsService {
         @GET("maps/api/directions/json")
@@ -990,6 +1000,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 String duration = route.legs.get(0).duration.text;
                                 RadioButton routeOption = new RadioButton(MainActivity.this);
                                 routeOption.setText("Route " + (i + 1) + " (" + duration + ")");
+                                fetchAverageTemperature(decodedPath, new TemperatureCallback() {
+                                    @Override
+                                    public void onTemperatureCalculated(double averageTemp) {
+                                        // Handle the average temperature result here
+                                        routeOption.setText(routeOption.getText() + String.format(" Average Temperature: %.2f°C", averageTemp));
+                                        // You can update the UI with the averageTemp here
+                                    }
+                                });
                                 int finalI = i;
                                 routeOption.setOnClickListener(v -> {
                                     selectedRoute = mMap.addPolyline(new PolylineOptions()
@@ -997,7 +1015,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                             .width(10)
                                             .color(colors[finalI % colors.length]));
                                     selectedRoutePolyline = encodedPath;  // Update the selected route polyline string
-                                    fetchAverageTemperature(decodedPath); // Fetch average temperature for selected route
+                                    //fetchAverageTemperature(decodedPath); // Fetch average temperature for selected route
                                 });
                                 routesGroup.addView(routeOption);
                             }
@@ -1222,17 +1240,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return heatIndex;
     }
 
-    private void fetchAverageTemperature(List<LatLng> decodedPath) {
-        int pathSize = decodedPath.size();
-        if (pathSize < 3) {
+    private void fetchAverageTemperature(List<LatLng> decodedPath, TemperatureCallback callback) {
+        if (decodedPath.size() < 3) {
             averageTempView.setText("N/A");
+            callback.onTemperatureCalculated(Double.NaN); // Notify with NaN for invalid data
             return;
         }
 
         List<LatLng> points = new ArrayList<>();
         points.add(decodedPath.get(0));
-        points.add(decodedPath.get(pathSize / 2));
-        points.add(decodedPath.get(pathSize - 1));
+        points.add(decodedPath.get(decodedPath.size() / 2));
+        points.add(decodedPath.get(decodedPath.size() - 1));
 
         // Implement caching mechanism
         SharedPreferences preferences = getSharedPreferences("weather_cache", MODE_PRIVATE);
@@ -1245,68 +1263,57 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             long currentTime = System.currentTimeMillis();
             double cachedTemperature = preferences.getFloat(locationKey + "_temperature", Float.NaN);
 
-            if (currentTime - lastFetchedTime < 600000 && !Double.isNaN(cachedTemperature)) { // 10 minutes cache duration
+            if (currentTime - lastFetchedTime < 600000 && !Double.isNaN(cachedTemperature)) { // 10-minute cache duration
                 temperatures.add(cachedTemperature);
                 if (temperatures.size() == 3) {
                     double averageTemp = (temperatures.get(0) + temperatures.get(1) + temperatures.get(2)) / 3.0;
-                    averageTempView.setText(String.format("Average Temperature: %.2f°C", averageTemp));
+                    //averageTempView.setText(String.format("Average Temperature: %.2f°C", averageTemp));
+                    callback.onTemperatureCalculated(averageTemp); // Return the result via callback
                 }
                 continue;
             }
 
-            // Exponential backoff implementation
-            final int MAX_RETRIES = 5;
-            int retryCount = 0;
-            long backoffTime = 1000; // initial backoff time in ms
+            // Make asynchronous network call
+            weatherService.getWeatherData(point.latitude + "," + point.longitude, "temperature", "metric", WEATHER_API_KEY)
+                    .enqueue(new Callback<WeatherResponse>() {
+                        @Override
+                        public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                WeatherResponse weatherResponse = response.body();
+                                if (weatherResponse.data != null && !weatherResponse.data.timelines.isEmpty()) {
+                                    WeatherResponse.Timeline timeline = weatherResponse.data.timelines.get(0);
+                                    if (timeline.intervals != null && !timeline.intervals.isEmpty()) {
+                                        WeatherResponse.Interval interval = timeline.intervals.get(0);
+                                        if (interval.values != null) {
+                                            double temperature = interval.values.temperature;
+                                            temperatures.add(temperature);
+                                            editor.putLong(locationKey + "_time", currentTime);
+                                            editor.putFloat(locationKey + "_temperature", (float) temperature);
+                                            editor.apply();
 
-            while (retryCount < MAX_RETRIES) {
-                try {
-                    weatherService.getWeatherData(point.latitude + "," + point.longitude, "temperature", "metric", WEATHER_API_KEY)
-                            .enqueue(new Callback<WeatherResponse>() {
-                                @Override
-                                public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
-                                    if (response.isSuccessful() && response.body() != null) {
-                                        WeatherResponse weatherResponse = response.body();
-                                        if (weatherResponse.data != null && !weatherResponse.data.timelines.isEmpty()) {
-                                            WeatherResponse.Timeline timeline = weatherResponse.data.timelines.get(0);
-                                            if (timeline.intervals != null && !timeline.intervals.isEmpty()) {
-                                                WeatherResponse.Interval interval = timeline.intervals.get(0);
-                                                if (interval.values != null) {
-                                                    double temperature = interval.values.temperature;
-                                                    temperatures.add(temperature);
-                                                    editor.putLong(locationKey + "_time", currentTime);
-                                                    editor.putFloat(locationKey + "_temperature", (float) temperature);
-                                                    editor.apply();
-                                                    if (temperatures.size() == 3) {
-                                                        double averageTemp = (temperatures.get(0) + temperatures.get(1) + temperatures.get(2)) / 3.0;
-                                                        averageTempView.setText(String.format("Average Temperature: %.2f°C", averageTemp));
-                                                    }
-                                                }
+                                            // If all 3 temperatures are fetched, calculate the average and return it
+                                            if (temperatures.size() == 3) {
+                                                double averageTemp = (temperatures.get(0) + temperatures.get(1) + temperatures.get(2)) / 3.0;
+                                                averageTempView.setText(String.format("Average Temperature: %.2f°C", averageTemp));
+                                                callback.onTemperatureCalculated(averageTemp); // Return the result via callback
                                             }
                                         }
-                                    } else {
-                                        handleRateLimit(response);
                                     }
                                 }
+                            } else {
+                                handleRateLimit(response);
+                            }
+                        }
 
-                                @Override
-                                public void onFailure(Call<WeatherResponse> call, Throwable t) {
-                                    Log.e(TAG, "API request failed: ", t);
-                                }
-                            });
-                    break; // exit the retry loop if the call was successful
-                } catch (Exception e) {
-                    retryCount++;
-                    try {
-                        Thread.sleep(backoffTime);
-                    } catch (InterruptedException ie) {
-                        Thread.currentThread().interrupt();
-                    }
-                    backoffTime *= 2; // exponential backoff
-                }
-            }
+                        @Override
+                        public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                            Log.e(TAG, "API request failed: ", t);
+                            callback.onTemperatureCalculated(Double.NaN); // Return NaN in case of failure
+                        }
+                    });
         }
     }
+
 
     private void handleRateLimit(Response<WeatherResponse> response) {
         if (response.code() == 429) {
